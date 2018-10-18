@@ -1,0 +1,234 @@
+Code: https://github.com/marcwan/AngularLiveLessons
+
+AngularJS has been changed to Angular in the subsequent versions.
+AJS had efficiency issues and had tightly coupled components and to JavaScript
+Angular had better efficiency, has loosely coupled components and makes use of TypeScript, which is a superset of JS and 
+has a strict type checking., also supports other languages
+
+Install Nodejs
+verify by typing "node -v" or "npm"
+Install Typscript tools, "npm install -g typescript"
+verify by typing "tsc"
+Download bootstrap and unzip it.
+Install Angular CLI , "npm install -g @angular/cli"
+Verify by running the command ng
+
+Create a new angular project by running "ng new hello-angular'
+Navigate to the project folder
+To run the project , execute the command "ng serve --open --port 9000" default port is 4200
+This will run the project on port "localhost:9000"
+
+The page you see is the application shell. The shell is controlled by an Angular component named AppComponent.
+Components are the fundamental building blocks of Angular applications. They display data on the screen, listen for user input, 
+and take action based on that input.
+
+The project "\hello-angular\src\app" will have the 
+app.component.ts  the component class code, written in TypeScript.
+app.component.spec.ts
+app.component.html the component template, written in HTML.
+app.component.css the component template, written in HTML.
+app.module.ts
+
+Change the title in app.component.ts to Welcome to Angular World.
+The double curly braces are Angular's interpolation binding syntax
+Angular will automatically update the page in localhost:4200 as it will be monitoring the project and re-compile any changes to the files.
+
+Install VSCode Editor and install the extension packages
+Angular v4 Typescript
+Angular-cli
+Debugger for chrome
+TSLint
+TypeScript importer
+
+Create a file named ts1.ts and write
+console.log("Hello World");
+Compile using "tsc ts1.ts"
+This will create a file called ts1.js
+Run this by "node ts1.js"
+
+Complile ts1.ts and run the js file if the compilation is sucessful
+tsc ts1.ts && node ts1.js
+
+//Type checking can be number, string, Boolean, null, undefined, any, void
+var x=1000;
+var x:number;
+var x:stringl
+var x:null
+var x:any
+
+function printName(name: string) {
+    return 'Welcome ' + name;
+}
+console.log(printName(123));
+
+D:\MEAN\hello-angular>tsc typescript1.ts && node typescript1.js
+typescript1.ts(5,23): error TS2345: Argument of type '123' is not assignable to parameter of type 'string'.
+
+Three ways to declare a variable is var, let and const
+const value cannot be changed.
+var if declared inside a loop is also available outside the loop
+let is variable is only declared and available within the scope (a loop)
+
+let x: string | Boolean;
+the variable x can be a string or a Boolean, called as Type Unions.
+
+let names: string | string[];
+names="abdul"
+names=["this","is","my","name"];
+
+Looping through collections
+let arr: number[] = [1,2,3,4,5,6];
+for (let value of arr){
+	console.log(value);
+}
+
+Functions in Typescript with return type
+function myFunction(param: string): number{
+return 0;
+}
+
+in JS if a function accepts 2 values and the caller function sends only one value then it does not complain, where as TypeScript complains.
+
+But if we want to make parameters optional then
+function myFunction(param1: number, param2: number, param3?: number): number {
+	
+}
+
+myFunction(1,2,3);
+myFunction(1,2);
+Both are valid as we specified the third parameter as optional using the ?
+To specify a default value to param3 we can say
+myFunction(param1: number, param2:number, param3:number = 0 ){
+}
+So now param3 is optional and also has a default value
+
+Reading multiple parameters for a function in TypeScript of any types
+fucntion myFunc(...args:any[]){ // or fucntion myFunc(...args:string[]){ // fucntion myFunc(...args:number[]){
+	for (let arg of args){
+		console.log(typeof(arg));
+	}
+}
+myFunc(1,2,"test","afad",4,5);
+
+Arrow functions can be used to write the below JS function as
+function test(param1){
+	return def;
+}
+
+(param1) => { 
+	return def; 
+}
+or
+(param1) => def;
+or
+param1 => def;
+
+Using single quotes for string is more of an Angular style no technical difference between using single or double quotes.
+variable substitution in a string  using `` (unix style execution)
+let var1:string="hello";
+let var2:number=123;
+let composite:string=`The string is ${var1} and number is ${var2}`;
+let arr=stringVariable.split(':'); // Will split the string based on : and creates and array
+.slice(startindex, length);
+.indexof('char');
+.push(1); or .push('string');
+.splice(2,3) - removes subset from start index to end index
+
+Interfaces in TS
+interfact IPerson {
+	first_name: string;
+	last_name: string,
+	age: number;
+}
+
+let person1: IPerson = {
+	first_name: 'abdul',
+	last_name: 'khaliq',
+	age: 30
+}
+or
+person1.first_name='Abdul';
+
+interfact IDescriptivePerson extends IPerson = {
+	hair_color: string
+}
+
+let person2: IDescriptivePerson = {
+	first_name: 'abdul',
+	last_name: 'khaliq',
+	age: 30,
+	hari_color: 'black'
+}
+
+interface INationality {
+	nationality: string
+}
+
+interface INationalizedDescriptivePerson extends IDescriptivePerson, INationality { 
+}
+
+let person3: INationalizedDescriptivePerson= {
+	//use all variables of both interfaces
+}
+
+interfact IDisplayable() {
+	display(): void;
+}
+
+//by default everything is public, we can make private or protected
+class Person implements IDisplayable {
+	first_name: string;
+	age: number;
+	private _ssn;
+	
+	display(): void {
+		console.log(this);
+	}
+
+}
+
+let p1 = new Person();
+p1.first_name = 'abdul';
+p1.age=30;
+
+Interface can extend multiple interfaces
+Class can implement multiple interfaces and extend another class.
+Use constructors to make sure that all the required variables are intialized.
+Methods can also be public and private.
+
+node_modules package has a lot of modules that is huge and is there only for dev environment.
+In the actual final package it will only have what we use.
+
+pollyfill.ts is used to insert the missing pieces of modules/classes in various browsers so that developers can need not worry about browser support 
+etc  and assume same common functionality across browsers.
+
+angular-cli.json defines our application
+
+linting is by which editor will offer comments /critics about the code.
+
+main.ts runs our application. Which specifies which modules to load.
+The main.js loads the AppModule which is the main module that runs the application.
+BrowserModule is loaded so that we can work with the browsers
+selector is the markup tag that defines each component. the index.html injects the component by refering to this selector and injects its corresponding html page based on the
+htmltemplateurl specificed in the component.
+
+
+We can use the bootstrap styling for better look. We use the fonts and css folder to the src folder of the app.
+
+In TS a class need not define all the member variables, and can just use the parameterized constructor and all those variables will
+be treated as class member variables.
+
+app.component is generally the root level component so we should use it as a component that dispatches or calls various other components
+
+Three types of @directives
+Components
+Structural directives (*ngFor, *ngIf)
+Attribute directives(ngModel)
+
+To create a new component
+ng generate component components/recipe-listen
+
+there is no constructor overloading in TypeScript
+
+to use [(ngModel)] we need to import FormsModule in the AppModule and add it to the imports. This is used for two way binding.
+(click)="addRecipe()" for button actions to call a function.

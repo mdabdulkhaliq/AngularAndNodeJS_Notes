@@ -1,0 +1,238 @@
+https://github.com/mdabdulkhaliq/practice-nodejs
+***********
+Node.js
+***********
+1. Node.js is a performance efficient, server-side platform. Makes writing backend code, simple and fun
+2. Node.js is not a framework or a language, it is a runtime environment that hooks into Google Chrome v8 engine to allow us to write Javascript code for server side tasks.
+3. Node.js is written in C++
+4. Performance efficient for real time applications.We can use same javascript language for both client and server side hence making debugging easy.
+5. Node.js uses event driven non-IO blocking model to run applications i.e requests are made asynchronously and does not block or slow down the program.
+6. With Node.js we can
+		Make use of sockets to make powerful real time applications such as chatting apps, multi-user games etc.
+		Connect and interact with a database.
+		File operations like writing into, reading from, updating or deleting files.
+7. CLI is much faster because its just text and not like GUI. Faster development speed.
+8. ssh-keygen -t rsa -C "emailID of github account"
+9.  git init
+	git remote add origin git@github.com:mdabdulkhaliq/practice-nodejs.git
+	echo "# practice-nodejs" >> README.md
+	git add README.md
+	git commit -m "first commit"
+	git push -u origin master
+10. main branch is the master. we create feature branches for new code check-ins
+11. git checkout -b featureBranchName
+	touch newFileInFeatureBranch.txt
+	git add newFileInFeatureBranch.txt
+	git commit -m "newFileInFeatureBranch"
+	git push featureBranchName (if error, git push --set-upstream origin featureBranchName)
+12. Install node.js
+	run the command "node"
+	console.log("Hello World");
+13. var has function scope, let has braces scope. if a var and let is defined inside a loop in a function block, var is accessible in the function block whereas let is accessible only in the loop block.
+	anonymous function does not have a name, assigned to a variable.
+	we can assign integers, strings, boolean, arrays or objects to the variables.
+14. npm is used to install node modules.
+	touch app.js
+	npm init this will create a file called package.json
+	All the node modules will be added to package.json
+		npm install express --save (will install locally and also save an entry to package.json as a dependency for global installation use -g option) 
+		npm install -g express --save
+	To view modules installed locally run the command 
+		npm list --depth
+		npm list -g --depth (View all modules installed globally)
+15. in app.js file, import express, app.get will look for GET requests on URL paths, app.listen will listen on a specific port we specify
+		const express = require('express');
+		const app = express();
+		
+		app.get("/",function(request,response){
+			response.send("<h1>Welcome to my app</h1>");
+		});
+		
+		app.listen(3000,function(error){
+			if(error == true){
+				console.log("some error occured");
+			}else{
+				console.log("Listening on port 3000");
+			}
+			
+		});
+16. Then run node app.js
+17. Create a module called messages.js and inside it write
+		module.exports = {
+			firstName: "Mohammed",
+			lastName: "Abdul Khaliq"
+			skills: ["Cloud","DevOps","Full Stack"]
+		};
+	In app.js import the module
+		const messages = require ('./messages.js');
+		console.log(messages.skills); or console.log(messages["skills"]);
+		response.send(messages.skills);
+	response.send can be called only once.
+18. To get a path parameter
+		app.get("/users/:name", function(request, response){
+			response.send(request["params"]["name"]);
+		});
+19. We were using express to send the response back, we can also send the response back from httpServer, its response.end not send for httpServer
+		const http = require('http');
+		const httpServer = http.createServer(function(request, response){
+			response.end("Response sent back via http server");
+		});
+		
+		httpServer.listen(8080, function(){
+			console.log("Listening on port 8080");
+		});
+20. To work with urls in the node.js app import url module, we can retrieve query parameters
+		const url = require('url');
+		const httpServer = http.createServer(function(request, response){
+			let queryObject = url.parse(request.url, true).query;
+			let greeting = queryObject.greeting || "Default Greeting";
+			response.end("Response sent back via http server" + greeting);
+		});
+21. View npm configuration
+		npm config list 
+22. Install body-parser, cookie-parser, morgan for our tutorial
+		npm install body-parser cookie-parser morgan --save
+	Use nodemon to dynamically update the js code without having to restart the node process
+		npm install -g nodemon
+23. Import morgan, it is a webserver logger. It will handle every incoming request, logs all web traffic, provides different types of log formats, short is one such. Will log to the console. The sequence app.use app.get app.post etc are important.
+		const morgan = require('morgan');
+		app.use(morgan('short'));
+24. To handle request paths that do no exists use
+		app.use(function(request, response){
+			response.status(404).send('The page you are trying to look for is not found');
+		});
+	BE CAREFUL to place this at the last or else this will get called irrespective of the below app.get functions even if there is a matching path.
+25. We can add response headers and using
+		response.setHeader('token','value');
+		response.status(201).send("information");
+26. Suppose there is an API of this formats
+		app.get('/api/member',function(request, response){});
+		app.get('/api/member/profile',function(request, response){});
+		app.get('/api/member/changepassword',function(request, response){});
+
+		app.get('/api/admin',function(request, response){});
+		app.get('/api/admin/profile',function(request, response){});
+		app.get('/api/admin/profile/changepassword',function(request, response){});
+	To make it cleaner we use express router
+		let memberAPI = express.Router();
+		let adminAPI = express.Router();
+		
+		app.use('/api/member', memberAPI);
+		app.use('/api/admin', adminAPI);
+		
+		If the router is written in a different file  the do module.exports = adminAPI; and module.exports=memberAPI to be visible in other js files which can be imported using require.
+	Now rewrite the URLS as
+		memberAPI.get('/',function(request, response){});
+		memberAPI.get('/profile',function(request, response){});
+		memberAPI.get('/changepassword',function(request, response){});
+		
+		adminAPI.get('/',function(request, response){});
+		adminAPI.get('/profile',function(request, response){});
+		adminAPI.get('/changepassword',function(request, response){});
+27. To serve static files create folder public and add all htmls, js, css , images in sub directories.
+		app.use(express.static(__dirname + '/public'));
+28. Jade template engine is used to write lesser html code and no end tags by using indentation.
+		npm install jade --save
+	Create a view folder and save the jade templates in this folder
+	Configure express to use jade
+		app.set('views', './views');
+		app.set('view engine','jade');
+	Create a template called demo.jade
+		html
+			head
+				title= title // passing value dynamically
+			body
+				h1= message
+	Now use response.render instead of response.send
+		response.render('demo', {
+			title: 'Dynamic Title from jade',
+			message: 'Dynamic message from jade'
+		});
+29. To define a class and id use the below jade syntax, for java script use - in the start and end
+		div(class="important-message" id="message-container")
+			ul
+				- for (var i=1; i<=5; i++) {
+					li= i + ".item " + i
+				- }
+30. EJS is also a template engine. remove jade and install ejs (Embedded JS)
+	EJS is similar to JSP where we can embed java script code in html
+		npm uninstall jade --save
+		npm install ejs --save
+	change the view engine to ejs
+	change the render method
+		response.render('ejsDemo',{tagline: 'EJS dynamic value'});
+	in the ejsDemo.ejs we can write our HTML code normally.
+	We can include another ejs template or page like header or footer using the path of the other ejs file
+		<% include ../partials/header %>
+		<%= tagline %>
+	We can write a loop as
+		<% for (var i=1; i<=5; i++) { %>
+			<li>
+				<%= i + "item" + i %>
+			</li>
+		<% } %>
+31. To use bootstrap download and add the css, js and other files to the public static folder to use it.
+	Map a GET path to an ejs file and inside the ejs file create various includes for header, content and footer ejs files, for modularizing it.
+32. Create a /basicform get method and use bootstrap form examples and divied into ejs modules. Now to post data we need
+	Using body-parser we can parse the request body in various formats such as json, text, etc.
+		npm install body-parser --save
+	Import in the app.js
+		const bodyParser = require('body-parser');
+		app.use(bodyParser.urlencoded({extended: false});
+		app.use(bodyParser.json());
+	Now retrieve the values in the post method 
+		app.post('/basicform',function(request, response){
+			console.log(request.body.username);
+			console.log(request.body.password);
+		});
+33. Node has single threaded thread loop, which will look at the event pool and process the events, this will be done asynchronously so that it will be a non blocking operation. Once the event is executed it will execute the callback function. 
+34. in JS functions can also be treated as objects and passed in function calls, called as functional programming
+35. In JS we have a foreach method on array that will fetch each element and execute the callback function that passes the value and the index that it is currently iterating.
+		fruits.foreach(function(fruit, index) {
+			console.log(index + "." + fruit);
+		}
+36. Node style call back function.
+		function nodeStyleCallBack(err, data) {
+			if(err) {
+				console.log(err);
+				return
+			}
+			console.log(data);
+		}
+		
+		function addNumbers(x, y, callback){
+			if(typeof x !== 'number' || typeof y !== 'number'){
+				callback(new Error('The arguments should be a number');
+				return;
+			}
+			
+		let result = x + y;
+		callback(null, result);
+		}
+		
+		addNumbers(1, 5, nodeStyleCallBack);
+37.	Promise is a javascript object for handling asynchronous requests. If a function cannot return a value or throw an exception without blocking it can return a promise instead. A promise is an object that represents the return value or the thrown exception that the function may eventually provide. A promise can also be used as a proxy for a remote object to overcome latency.
+38. Performance monitoring tool for Node.js, process manager tool (pm2)
+		npm install pm2 
+	Start the app using pm2	
+		pm2 start app.js
+	View more details
+		pm2 show <pidOfTheApp>
+	To view the logs
+		pm2 logs index
+	View CPU and memory
+		pm2 monit
+	Stop the app
+		pm2 stop idOfTheApp
+	Remove the app from pm2 db completely
+		pm2 delete <idOfTheApp>
+To run an app in cluster by creating no of child processes same as the no of cpus available.
+	pm2 start index.js -i 0 --name 'appName'
+	pm2 delete <ids>
+Start a cluster of 2 instances
+	pm2 start index.js -i 2 --name 'appName'
+Scale node js process
+	pm2 scale "appName" +1
+Now we will have 3 processes of nodejs working in a cluster.
+39. We can create config files with JSON format and import it using require and use
+		config.get(parameter.value)

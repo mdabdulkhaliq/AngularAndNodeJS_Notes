@@ -1,0 +1,189 @@
+https://github.com/mehulmpt/angular6-youtube
+Decorators
+-------------
+Decorator is something that decorates a method or a class by adding additional information to the method or class.
+We can write a decorator in any component as for example
+
+//The parameters target=>name of the method
+//name=Name of the component which has the method
+//descriptor actual implmentation of the target method/function reference
+function log(target, name , descriptor) {
+    console.log(target, name , descriptor)
+    //We can retrieve the value of the descriptor which is the actual function and override its behaviour
+    originalFunction = descriptor.value
+    descriptor.value=function(){
+        console.log('myMethod hacked')
+    }
+    return descriptor
+}
+
+@log
+function myMethod(){
+    console.log('myMethod called')
+}
+
+//Now if we call the method myMethod, the result will be myMethod hacked as we have overridden the function definition in the decorator method.
+if we dont override its behaviour , since we are returning the actual original descriptor the actual function will be called at the end, the result will be myMethod called.
+If we dont return the descriptor at the end the actual function will not be invoked.
+We can retrieve the arguments passed to the myMethod function in the decorator by
+descriptor.value = function (...args){
+    console.log('arguments that were passed are', args)
+    const result =  originalFunction.apply(this, args) // Will call the actual function with the parameters that were passed to the function by the caller.
+    return result // This will be result and the actual function will not be called.
+}
+
+A decorator should immediately be followed by a method or a class.
+
+if we apply @log to the Class then it returns the className to the decorator method
+function log(className){
+    console.log(className)
+    return (...args) => {
+        console.log('Arguments that were passed to the class are ', args)
+        return new className(...args)
+    }
+}
+
+@log
+class MyClass {
+    constructor(arg1, arg2){
+        console.log('constructor called')
+    }
+}
+---------------------------------------------------------------------------------
+LifeCycle Hooks
+OnChanges Everytime an input property is changed
+OnInit whenever component is initialized, happens only once
+DoCheck Fired when angular itself has some change behind the scenes
+AfterContentInit
+AfterContentChecked
+AfterViewInit
+AfterViewChecked
+onDestroy
+--------------------------------------
+ng generate component componentName
+This will import the module in the app module and also add it to the NgModules declarations.
+Import this component into AppComponent by using the component selector.
+Hello Work , calling antoher component <new-component></new-component>
+{{ variableName }} -> Interpolation can be used in the components html file, we can use expresions also 5+9 etc, this variable should be in the components ts file.
+Avoid using method in the interpolation as angular may call the component many number of times that could slow down the application if it is doing some heavy tasks.
+We can use variable substitution inside string using unix style execution `` console.log(`Hello ${this.name} welcome to angular`)
+In the component ts file if we declare a variable 
+myVar = "Abdul"
+and in the component html if we have
+Model to View Binding
+<input type="text" value="{{myVar}}"> // This will bind the myVar value to the input value.
+<input type="text" [value]="myVar"> // This will bind the myVar value to the input type's value attribute. i.e the value attribute itself is added by angular.
+View to Model Binding through events.
+<button (click)="callMyFuction()">Click Me</button>
+--------------------------------------------
+Two way data binding using ngModel 
+<input type="text" [value]="myVar" (input)="updateValue($event)"/> //input event.
+{{myVar}}
+in the component ts file we can retrieve the value in the updateValue funtion by calling e.target.value
+[value],[input] are called as directives which angular provides OOB.
+<input type="text" [(ngModel)]="myVar"/>
+{{myVar}}
+ngModel is imported from @angular/forms using FormsModule and add it to imports of main module.
+*ngFor="let record of records; let i = index" can be applied to any valid html element.
+{{record.name}}
+{{record.age}}
+{{i}} // index
+Angular also provides even, odd, first and last, let evenRecords = even; let oddRecords = odd
+We can apply class to an element using
+[ngClass]="{odd: oddRecord, even:evenRecord}"
+So the attribut class="odd" will be added for odd records and class="even" will be added for even records.
+--------------------------------------------
+Services
+ng generate service serviceName
+Adding the service to providers section of the root Module ts file, it will be available across all components of the app
+Now in the component where we want to use the service, create a constructor and have a parameter with the type of the serviceName, angular will automatically inject the
+service object for us to use.
+The services are singleton.
+--------------------------------------------
+HTTP Calls
+Import HttpClientModule in the root module form angular/common/Http and add it to the imports
+In the service class import the HttpClient and create a constructor with a parameter type HttpClient for automatic injection
+We can declare an interface for response and map the response of the http call to it.
+this.http.getData(URL).subscribe(data => {
+    console.log('This is the data we got from the server', data)
+    this.records = data.obj
+})
+--------------------------------------------
+To avoid CORS 
+ng serve --proxy-config proxyconfig.jsn
+proxyconfig.json
+{
+    "/api": {
+        "target": "http://localhost:1234",
+        "secure": false,
+        "changeOrigin": true
+    }
+}
+--------------------------------------------
+Route Protection
+ng generate guard auth
+Import the AppGuard class component in the root module.ts and then, for the specific route path add a parameter CanActivate: [AuthGuard], AuthGuard is the name of the class
+We can specify multiple guards in the canActivate it acts like an &&
+AuthGuard class should also be added to the provider in the root module.ts
+Route Guards: Whenever user tries to access a route, routeGuard checks the conditions for eligibility
+So in the Guard component method for canActivate, we can call the service which checks for username and password validity and then set a value say loggedIn to true to false.
+Use this value in the Guard to return true or false, If the guard returns false the component will not be activated.
+CanActivate - User eligible to see a route
+CanActivateChild - 
+CanDeactivate - 
+Resolve
+CanLoad
+To redirect we say, this.router.navigate(['admin']), inject the router using constructor.
+
+//Angular will insert the component matching the path
+<router-outlet></router-outlet>
+
+To use two way data binding
+Add import {FormsModule} from '@angular/forms'; to the root module.ts and also add it to the imports.
+
+--------------------------------------------------------------
+For Manual Form validations
+Use keyup even and call a function, and in the function we have two way binded data validate it and show message as per requirement
+For Tempalte driven Forms.
+Add a #FormName="ngForm", so that angular will monitor all inputs under it.
+We can add required, type=number min=1 max=1000 etc validations
+FormName.valid will return the validty of the form based on all validations are correct for the input fields under the ngForm
+Angular adds 
+ng-valid
+ng-invalid
+ng-touched
+ng-dirty - value changed
+ng-pristine - value not changed.
+(click)
+(onkeyup)
+For Reactive Forms validations
+Import ReactiveFormsModule from angular/forms
+Also import AbstractControl, ValidatorFn, FormBuilder, FormGroup, FormControl, Validators from the angular/forms
+FormGroups will contain formcontrols which will be validated.
+declare recipeForm of type FormGroup, the recipeForm is the name of the form in the html
+Create a function called 
+buildFormGroup(): void {
+    const fg = {
+        'title' :  new FormControl(this.variablename, [Validators.required]),
+        so on....
+    }
+}
+
+similarly add all the UI/HTML input fields and their Validators in the fg, we have Validators.min max, required
+
+this.recipeForm = new FormGroup(fg);
+Then in the html have all the input names as formControlName that will be mapped to title, etc as in the fg.
+Also in the form tag add the tag [formGroup]="recipeForm" to bind this form to the formgroup we created.
+Add the ReactiveFormsModule to the main module and imports.
+call the buildFormGroup in the constructor to initialize the formgroup and whenever the dom is changed in the UI to add the new elements to the fg
+
+Write a custom Validator, in the validators array call a function and write that function in the ts file
+export function customValidator(): ValidatorFn {
+    return (control: AbstractControl): {
+        [key: string] => {
+            if(control.value.toLowerCase().indexOf('tuna') !== -1) {
+                return { 'n' }
+            }
+        }
+    }
+}
